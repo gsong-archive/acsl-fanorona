@@ -177,3 +177,37 @@ def test_all_captures_by_location(board):
     assert board.all_captures_by_location_for_black == {
         (14): set([frozenset([12])])
     }
+
+
+def test_samples(board):
+    def flatten_captures(all_captures):
+        all = set()
+        for _, captures in all_captures.iteritems():
+            for c in captures:
+                all.add(c)
+        return all
+
+    board.initialize_white_pieces(12, 17, 22)
+
+    board.initialize_black_pieces(9, 14, 10)
+    assert frozenset([14]) in flatten_captures(
+        board.all_captures_by_location_for_white
+    )
+
+    board.initialize_black_pieces(9, 14, 15)
+    assert frozenset([14, 15]) in flatten_captures(
+        board.all_captures_by_location_for_white
+    )
+
+    board.initialize_black_pieces(16, 9, 5)
+    assert frozenset([16]) in flatten_captures(
+        board.all_captures_by_location_for_white
+    )
+
+    board.initialize_black_pieces(5, 15, 20)
+    assert flatten_captures(board.all_captures_by_location_for_white) == set()
+
+    board.initialize_black_pieces(3, 18, 19)
+    assert frozenset([18, 19]) in flatten_captures(
+        board.all_captures_by_location_for_white
+    )

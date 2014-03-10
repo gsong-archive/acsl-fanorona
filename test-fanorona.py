@@ -159,3 +159,12 @@ def test_captures_for_location(board):
     assert board.captures_for_location(12) == set([frozenset([14])])
     assert board.captures_for_location(14) == set([frozenset([12])])
     assert board.captures_for_location(17) == set()
+
+
+def test_all_captures(board):
+    assert board.all_captures_for_white == {
+        (1, 2): set([frozenset([(3, 2)])])
+    }
+    assert board.all_captures_for_black == {
+        (3, 2): set([frozenset([(1, 2)])])
+    }

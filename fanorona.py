@@ -229,3 +229,18 @@ class Board(object):
         captures = self.captures_for(self.position_for(location))
         return set(map(position_to_location(self), captures))
 
+    def all_captures_for(self, color):
+        all_captures = {}
+        for piece in getattr(self, color):
+            captures = self.captures_for(piece)
+            if captures:
+                all_captures[piece] = captures
+        return all_captures
+
+    @property
+    def all_captures_for_white(self):
+        return self.all_captures_for(self.WHITE)
+
+    @property
+    def all_captures_for_black(self):
+        return self.all_captures_for(self.BLACK)

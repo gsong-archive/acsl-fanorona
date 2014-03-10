@@ -24,6 +24,17 @@ def valid_piece(func):
     return wrapped
 
 
+def not_subset(all_sets):
+    def filter_func(fset):
+        is_not_subset = True
+        for fs in [x for x in all_sets if x is not fset]:
+            if fset & fs == fset:
+                is_not_subset = False
+                break
+        return is_not_subset
+    return filter_func
+
+
 class Board(object):
     def __init__(self, size=5):
         self.size = size
@@ -195,16 +206,5 @@ class Board(object):
         for combo in opponent_combos:
             opponent_set.add(frozenset(combo))
         all = opponent_set & self.possible_captures_for(position)
-        all = sorted(all, key=len)
+        return set(filter(not_subset(all), all))
 
-        opponent_set = set()
-        while all:
-            matched = False
-            combo = all.pop(0)
-            for fs in all:
-                if combo & fs:
-                    matched = True
-                    break
-            if not matched:
-                opponent_set.add(combo)
-        return opponent_set

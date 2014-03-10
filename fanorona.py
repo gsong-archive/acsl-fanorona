@@ -244,3 +244,20 @@ class Board(object):
     @property
     def all_captures_for_black(self):
         return self.all_captures_for(self.BLACK)
+
+    def all_captures_by_location_for(self, color):
+        all_captures_by_position = self.all_captures_for(color)
+        all_captures = {}
+        for pos, captures in all_captures_by_position.iteritems():
+            all_captures[self.location_for(pos)] = set(
+                map(position_to_location(self), captures)
+            )
+        return all_captures
+
+    @property
+    def all_captures_by_location_for_white(self):
+        return self.all_captures_by_location_for(self.WHITE)
+
+    @property
+    def all_captures_by_location_for_black(self):
+        return self.all_captures_by_location_for(self.BLACK)

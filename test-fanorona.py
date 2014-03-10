@@ -168,3 +168,12 @@ def test_all_captures(board):
     assert board.all_captures_for_black == {
         (3, 2): set([frozenset([(1, 2)])])
     }
+
+
+def test_all_captures_by_location(board):
+    assert board.all_captures_by_location_for_white == {
+        (12): set([frozenset([14])])
+    }
+    assert board.all_captures_by_location_for_black == {
+        (14): set([frozenset([12])])
+    }

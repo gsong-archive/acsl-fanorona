@@ -67,8 +67,8 @@ class Board(object):
     def black(self):
         return self.black_pieces
 
-    def position_for(self, num):
-        return self.board[num - 1]
+    def position_for(self, location):
+        return self.board[location - 1]
 
     def location_for(self, position):
         return self.board.index(position) + 1

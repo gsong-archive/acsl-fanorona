@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from functools import wraps
 from itertools import (
     chain, combinations, izip, izip_longest, product, repeat, starmap
 )
@@ -13,15 +14,21 @@ def grouper(iterable, n, fillvalue=None):
     return izip_longest(fillvalue=fillvalue, *args)
 
 
-def valid_piece(func):
-    def wrapped(obj, pos):
-        if obj.validate_piece_existence and \
-                not pos in (obj.white_pieces | obj.black_pieces):
-            raise ValueError(
-                'There is no piece at {}'.format(obj.location_for(pos))
-            )
-        return func(obj, pos)
-    return wrapped
+def valid_piece(for_location=False):
+    def decorator(func):
+        @wraps(func)
+        def wrapped(obj, pos):
+            _pos = pos
+            if for_location:
+                _pos = obj.position_for(pos)
+            if obj.validate_piece_existence and \
+                    not _pos in (obj.white_pieces | obj.black_pieces):
+                raise ValueError(
+                    'There is no piece at {}'.format(obj.location_for(_pos))
+                )
+            return func(obj, pos)
+        return wrapped
+    return decorator
 
 
 def not_subset(all_sets):
@@ -120,7 +127,7 @@ class Board(object):
     def initialize_black_pieces(self, *nums):
         self.initialize_pieces('black', *nums)
 
-    @valid_piece
+    @valid_piece()
     def legal_moves_for(self, position):
         x, y = position
         possibles = set(
@@ -128,27 +135,27 @@ class Board(object):
         ) & set(self.board)
         return possibles - (self.white_pieces | self.black_pieces)
 
-    @valid_piece
+    @valid_piece()
     def can_move_up_for(self, position):
         x, y = position
         return (x, y + 1) in self.legal_moves_for(position)
 
-    @valid_piece
+    @valid_piece()
     def can_move_down_for(self, position):
         x, y = position
         return (x, y - 1) in self.legal_moves_for(position)
 
-    @valid_piece
+    @valid_piece()
     def can_move_left_for(self, position):
         x, y = position
         return (x - 1, y) in self.legal_moves_for(position)
 
-    @valid_piece
+    @valid_piece()
     def can_move_right_for(self, position):
         x, y = position
         return (x + 1, y) in self.legal_moves_for(position)
 
-    @valid_piece
+    @valid_piece()
     def possible_captures_for(self, position):
         x, y = position
         captures = set()
@@ -191,7 +198,7 @@ class Board(object):
 
         return captures
 
-    @valid_piece
+    @valid_piece()
     def captures_for(self, position):
         opponent = self.black_pieces
         if position in self.black_pieces:

@@ -151,3 +151,11 @@ def test_captures(board):
         frozenset([(2, 3), (3, 3), (4, 3)]),
         frozenset([(0, 1), (0, 0)]),
     ])
+
+
+def test_captures_for_location(board):
+    with pytest.raises(ValueError):
+        board.captures_for_location(7)
+    assert board.captures_for_location(12) == set([frozenset([14])])
+    assert board.captures_for_location(14) == set([frozenset([12])])
+    assert board.captures_for_location(17) == set()

@@ -42,6 +42,12 @@ def not_subset(all_sets):
     return filter_func
 
 
+def position_to_location(board):
+    def map_func(pset):
+        return frozenset(map(board.location_for, pset))
+    return map_func
+
+
 class Board(object):
     WHITE = 'white'
     BLACK = 'black'
@@ -217,4 +223,9 @@ class Board(object):
             opponent_set.add(frozenset(combo))
         all = opponent_set & self.possible_captures_for(position)
         return set(filter(not_subset(all), all))
+
+    @valid_piece(for_location=True)
+    def captures_for_location(self, location):
+        captures = self.captures_for(self.position_for(location))
+        return set(map(position_to_location(self), captures))
 

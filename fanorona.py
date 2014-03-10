@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
-from itertools import chain, izip, izip_longest, product, repeat
+from itertools import (
+    chain, combinations, izip, izip_longest, product, repeat, starmap
+)
 from operator import add, sub
 
 
@@ -19,7 +21,6 @@ def valid_piece(func):
                 'There is no piece at {}'.format(obj.location_for(pos))
             )
         return func(obj, pos)
-
     return wrapped
 
 
@@ -139,8 +140,8 @@ class Board(object):
     @valid_piece
     def possible_captures_for(self, position):
         x, y = position
-
         captures = set()
+
         if self.can_move_up_for(position):
             # possible top captures
             elements = self.possible_axis_elements(y, add, 3, 2, 1)
@@ -178,3 +179,32 @@ class Board(object):
             captures = self.add_to_captures(captures, elements, [y])
 
         return captures
+
+    @valid_piece
+    def captures_for(self, position):
+        opponent = self.black_pieces
+        if position in self.black_pieces:
+            opponent = self.white_pieces
+        opponent_combos = chain(
+            *starmap(
+                combinations,
+                product([opponent], range(1, len(opponent) + 1))
+            )
+        )
+        opponent_set = set()
+        for combo in opponent_combos:
+            opponent_set.add(frozenset(combo))
+        all = opponent_set & self.possible_captures_for(position)
+        all = sorted(all, key=len)
+
+        opponent_set = set()
+        while all:
+            matched = False
+            combo = all.pop(0)
+            for fs in all:
+                if combo & fs:
+                    matched = True
+                    break
+            if not matched:
+                opponent_set.add(combo)
+        return opponent_set

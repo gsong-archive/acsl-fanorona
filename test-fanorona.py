@@ -46,6 +46,8 @@ def test_legal_moves(board):
     assert board.legal_moves_for((2, 2)) == set([(2, 1), (2, 3)])
     assert board.legal_moves_for((4, 0)) == set([(3, 0), (4, 1)])
     assert board.legal_moves_for((4, 4)) == set([(3, 4)])
+    with pytest.raises(ValueError):
+        board.legal_moves_for((3, 4))
 
 
 def test_can_move_up(board):
@@ -83,7 +85,10 @@ def test_can_move_right(board):
         board.can_move_right_for((2, 0))
 
 
-def test_possible_captures_without_validation(board):
+def test_possible_captures(board):
+    with pytest.raises(ValueError):
+        board.possible_captures_for((3, 4))
+
     board.validate_piece_existence = False
     assert board.possible_captures_for((0, 0)) == set([
         frozenset([(0, 2), (0, 3), (0, 4)]),
@@ -121,4 +126,28 @@ def test_possible_captures_without_validation(board):
         frozenset([(0, 3)]),
         frozenset([(3, 3), (4, 3)]),
         frozenset([(3, 3)]),
+    ])
+
+
+def test_captures(board):
+    with pytest.raises(ValueError):
+        board.captures_for((3, 4))
+    assert board.captures_for((1, 2)) == set([frozenset([(3, 2)])])
+    assert board.captures_for((3, 2)) == set([frozenset([(1, 2)])])
+    assert board.captures_for((1, 1)) == set()
+    assert board.captures_for((4, 3)) == set()
+
+    board.initialize_white_pieces(7)
+    assert board.captures_for((1, 3)) == set([frozenset([(3, 3), (4, 3)])])
+
+    board.initialize_black_pieces(8, 9, 10)
+    assert board.captures_for((1, 3)) == set(
+        [frozenset([(2, 3), (3, 3), (4, 3)])]
+    )
+
+    board.initialize_black_pieces(8, 9, 10, 16, 21)
+    board.initialize_white_pieces(6)
+    assert board.captures_for((0, 3)) == set([
+        frozenset([(2, 3), (3, 3), (4, 3)]),
+        frozenset([(0, 1), (0, 0)]),
     ])

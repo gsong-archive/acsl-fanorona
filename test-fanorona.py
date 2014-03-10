@@ -84,20 +84,41 @@ def test_can_move_right(board):
 
 
 def test_possible_captures_without_validation(board):
-    board.disable_validation = True
+    board.validate_piece_existence = False
     assert board.possible_captures_for((0, 0)) == set([
         frozenset([(0, 2), (0, 3), (0, 4)]),
         frozenset([(0, 2), (0, 3)]),
         frozenset([(0, 2)]),
-        frozenset([(2, 0), (3, 0), (4, 0)]),
-        frozenset([(2, 0), (3, 0)]),
-        frozenset([(2, 0)]),
     ])
-    assert board.possible_captures_for((4, 4)) == set(
-        set([(2, 4), (1, 4), (0, 4)]),
-        set([(2, 4), (1, 4)]),
-        set([(2, 4)]),
-        set([(4, 2), (4, 1), (4, 0)]),
-        set([(4, 2), (4, 1)]),
-        set([(4, 2)]),
-    )
+    assert board.possible_captures_for((0, 4)) == set([
+        frozenset([(2, 4), (3, 4), (4, 4)]),
+        frozenset([(2, 4), (3, 4)]),
+        frozenset([(2, 4)]),
+        frozenset([(0, 2), (0, 1), (0, 0)]),
+        frozenset([(0, 2), (0, 1)]),
+        frozenset([(0, 2)]),
+    ])
+    assert board.possible_captures_for((4, 4)) == set([
+        frozenset([(2, 4), (1, 4), (0, 4)]),
+        frozenset([(2, 4), (1, 4)]),
+        frozenset([(2, 4)]),
+    ])
+    assert board.possible_captures_for((4, 0)) == set([
+        frozenset([(2, 0), (1, 0), (0, 0)]),
+        frozenset([(2, 0), (1, 0)]),
+        frozenset([(2, 0)]),
+        frozenset([(4, 2), (4, 3), (4, 4)]),
+        frozenset([(4, 2), (4, 3)]),
+        frozenset([(4, 2)]),
+    ])
+    assert board.possible_captures_for((2, 3)) == set([
+        frozenset([(2, 2), (2, 1), (2, 0)]),
+        frozenset([(2, 2), (2, 1)]),
+        frozenset([(2, 2)]),
+        frozenset([(2, 4)]),
+        frozenset([(2, 0), (2, 1)]),
+        frozenset([(2, 1)]),
+        frozenset([(0, 3)]),
+        frozenset([(3, 3), (4, 3)]),
+        frozenset([(3, 3)]),
+    ])

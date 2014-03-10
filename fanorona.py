@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from itertools import chain, cycle, izip, izip_longest, product, repeat
+from itertools import chain, izip, izip_longest, product, repeat
 from operator import add, sub
 
 
@@ -13,8 +13,8 @@ def grouper(iterable, n, fillvalue=None):
 
 def valid_piece(func):
     def wrapped(obj, pos):
-        if (not obj.disable_validation) and \
-                (not pos in (obj.white_pieces | obj.black_pieces)):
+        if obj.validate_piece_existence and \
+                not pos in (obj.white_pieces | obj.black_pieces):
             raise ValueError(
                 'There is no piece at {}'.format(obj.location_for(pos))
             )
@@ -28,7 +28,7 @@ class Board(object):
         self.size = size
         self.white_pieces = set()
         self.black_pieces = set()
-        self.disable_validation = False
+        self.validate_piece_existence = True
 
     @property
     def board(self):
@@ -56,6 +56,21 @@ class Board(object):
 
     def frozenset(self, iterable):
         return frozenset(iterable) & set(self.board)
+
+    def possible_axis_elements(
+        self, seed, func, outer_start, inner_start, modifier
+    ):
+        max = self.size - 2
+        elements = []
+        for i in xrange(outer_start, max + outer_start):
+            elements.append(
+                map(
+                    func,
+                    repeat(seed, i - max + modifier),
+                    range(inner_start, i)
+                )
+            )
+        return elements
 
     def add_to_captures(self, captures, x, y):
         x, y = list(x), list(y)
@@ -124,58 +139,42 @@ class Board(object):
     @valid_piece
     def possible_captures_for(self, position):
         x, y = position
-        max = self.size - 2
 
         captures = set()
         if self.can_move_up_for(position):
             # possible top captures
-            y_list = []
-            for i in xrange(3, max + 3):
-                y_list.append(map(add, repeat(y, i - max + 1), range(2, i)))
-            captures = self.add_to_captures(captures, [x], y_list)
+            elements = self.possible_axis_elements(y, add, 3, 2, 1)
+            captures = self.add_to_captures(captures, [x], elements)
 
             # possible bottom captures
-            y_list = []
-            for i in xrange(2, max + 2):
-                y_list.append(map(sub, repeat(y, i - max + 2), range(1, i)))
-            captures = self.add_to_captures(captures, [x], y_list)
+            elements = self.possible_axis_elements(y, sub, 2, 1, 2)
+            captures = self.add_to_captures(captures, [x], elements)
 
-#         if self.can_move_down_for(position):
-#             # possible top captures
-#             captures = self.add_to_captures(
-#                 captures, xrange(2, max + 2), cycle([x]),
-#                 map(add, repeat(y, i - max + 2), range(1, i))
-#             )
-# 
-#             # possible bottom captures
-#             captures = self.add_to_captures(
-#                 captures, xrange(3, max + 3), cycle([x]),
-#                 map(sub, repeat(y, i - max + 1), range(2, i))
-#             )
-# 
-#         if self.can_move_left_for(position):
-#             # possible left captures
-#             for i in xrange(3, max + 3):
-#                 captures.add(
-#                     self.frozenset(
-#                         zip(
-#                             map(sub, repeat(x, i - max + 1), range(2, i)),
-#                             cycle([y])
-#                         )
-#                     )
-#                 )
-# 
-#             # possible right captures
-#             for i in xrange(2, max + 2):
-#                 captures.add(
-#                     self.frozenset(
-#                         zip(
-#                             map(add, repeat(x, i - max + 2), range(1, i)),
-#                             cycle([y])
-#                         )
-#                     )
-#                 )
-# 
-#         captures = set(filter(None, captures))
-        import pdb
-        pdb.set_trace()
+        if self.can_move_down_for(position):
+            # possible top captures
+            elements = self.possible_axis_elements(y, add, 2, 1, 2)
+            captures = self.add_to_captures(captures, [x], elements)
+
+            # possible bottom captures
+            elements = self.possible_axis_elements(y, sub, 3, 2, 1)
+            captures = self.add_to_captures(captures, [x], elements)
+
+        if self.can_move_left_for(position):
+            # possible right captures
+            elements = self.possible_axis_elements(x, add, 2, 1, 2)
+            captures = self.add_to_captures(captures, elements, [y])
+
+            # possible left captures
+            elements = self.possible_axis_elements(x, sub, 3, 2, 1)
+            captures = self.add_to_captures(captures, elements, [y])
+
+        if self.can_move_right_for(position):
+            # possible right captures
+            elements = self.possible_axis_elements(x, add, 3, 2, 1)
+            captures = self.add_to_captures(captures, elements, [y])
+
+            # possible left captures
+            elements = self.possible_axis_elements(x, sub, 2, 1, 2)
+            captures = self.add_to_captures(captures, elements, [y])
+
+        return captures

@@ -43,6 +43,9 @@ def not_subset(all_sets):
 
 
 class Board(object):
+    WHITE = 'white'
+    BLACK = 'black'
+
     def __init__(self, size=5):
         self.size = size
         self.white_pieces = set()
@@ -112,20 +115,20 @@ class Board(object):
         for num in nums:
             positions.append(self.position_for(num))
 
-        if color.lower() == 'white':
-            self.check_collision_with('black', positions)
+        if color.lower() == self.WHITE:
+            self.check_collision_with(self.BLACK, positions)
         else:
-            self.check_collision_with('white', positions)
+            self.check_collision_with(self.WHITE, positions)
 
         pieces = getattr(self, color)
         pieces.clear()
         pieces.update(positions)
 
     def initialize_white_pieces(self, *nums):
-        self.initialize_pieces('white', *nums)
+        self.initialize_pieces(self.WHITE, *nums)
 
     def initialize_black_pieces(self, *nums):
-        self.initialize_pieces('black', *nums)
+        self.initialize_pieces(self.BLACK, *nums)
 
     @valid_piece()
     def legal_moves_for(self, position):

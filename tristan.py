@@ -24,7 +24,7 @@ def testIfAdjacent(white, black, a):
     if white[a] + 5 in black and white[a] not in set4:
         x.append(white[a])
         z.append(4)
-    if len(x) == 4 or len(x) == 0:
+    if len(x) in (0, 4):
         pass
     else:
         return [a, z]
@@ -208,16 +208,9 @@ def main():
                         break
                     e += 1
                 setToBeCaptured.sort()
-                f = 0
-                g = ""
-                while f < len(setToBeCaptured) - 1:
-                    g += str(setToBeCaptured[f])
-                    g += ", "
-                    f += 1
-                g += str(setToBeCaptured[f])
-                print g
+                print(", ".join(map(str, setToBeCaptured)))
             else:
-                print "NONE"
+                print("NONE")
         else:
             adjacent = list(adjacent)
             movement = adjacent[0][1][0]
@@ -277,14 +270,9 @@ def main():
                 print "NONE"
             else:
                 setToBeCaptured.sort()
-                f = 0
-                g = ""
-                while f < len(setToBeCaptured) - 1:
-                    g += str(setToBeCaptured[f])
-                    g += ", "
-                    f += 1
-                g += str(setToBeCaptured[f])
-                print g
+                print(", ".join(map(str, setToBeCaptured)))
         a += 1
 
-main()
+
+if __name__ == "__main__":
+    main()

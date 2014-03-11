@@ -130,10 +130,10 @@ class Board(object):
         x, y = list(x), list(y)
         if len(x) > len(y):
             for e in x:
-                captures.add(self.frozenset(product(e, y)))
+                captures.add(self.frozenset(product(e, y)) & set(self.board))
         else:
             for e in y:
-                captures.add(self.frozenset(product(x, e)))
+                captures.add(self.frozenset(product(x, e)) & set(self.board))
         captures = filter(None, captures)
         return set(captures)
 

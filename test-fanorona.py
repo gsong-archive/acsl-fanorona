@@ -177,6 +177,9 @@ def test_all_captures_by_location(board):
     assert board.all_captures_by_location_for_black == {
         (14): set([frozenset([12])])
     }
+    board.initialize_white_pieces(1, 2)
+    board.initialize_black_pieces(3, 4, 5)
+    assert board.all_captures_by_location_for_white == {}
 
 
 def test_samples(board):

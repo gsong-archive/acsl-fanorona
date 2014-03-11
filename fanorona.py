@@ -88,6 +88,32 @@ class Board(object):
     def possible_axis_elements(
         self, seed, func, outer_start, inner_start, modifier
     ):
+        """
+        Gives the coordinate points along the same axis for pieces that can
+        potentially be captured.
+
+        seed: the coordinate point (x or y) of the piece we're interested in
+        func: `operator.add` or `operator.sub`, depending on if we're
+                interested in moving up or down, left or right along the axis.
+                Up and right are `add`, down and left are `sub`.
+        outer_start, inner_start, modifier: Shenanigan numbers to be able to
+                calculate the coordinate ponts properly, either `3, 2, 1` or
+                `2, 1, 2` depending on the direction you're moving.
+
+        For example, to calculate what could be captured by moving a piece up:
+        ```
+        >>> from fanorona import Board
+        >>> b = Board()
+        >>> from operator import add
+        >>> b.possible_axis_elements(3, add, 3, 2, 1)
+        [[5], [5, 6], [5, 6, 7]]
+        ```
+
+        So if a piece started out at y=3, it can possibly capture pieces on the
+        same x-coordinate at y=5, y=[5, 6], or y=[5, 6, 7]. Notice that this
+        function makes no attempt to figure out how large the board size is, so
+        it's up to you to filter out results that are out of bounds.
+        """
         max = self.size - 2
         elements = []
         for i in xrange(outer_start, max + outer_start):

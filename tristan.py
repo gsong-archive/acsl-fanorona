@@ -267,7 +267,7 @@ def main():
                     break
                 e += 1
             if len(setToBeCaptured) == 0:
-                print "NONE"
+                print("NONE")
             else:
                 setToBeCaptured.sort()
                 print(", ".join(map(str, setToBeCaptured)))

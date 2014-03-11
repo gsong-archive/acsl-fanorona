@@ -185,9 +185,8 @@ def test_all_captures_by_location(board):
 def test_samples(board):
     def flatten_captures(all_captures):
         all = set()
-        for _, captures in all_captures.iteritems():
-            for c in captures:
-                all.add(c)
+        for captures in all_captures.values():
+            map(all.add, captures)
         return all
 
     board.initialize_white_pieces(12, 17, 22)
